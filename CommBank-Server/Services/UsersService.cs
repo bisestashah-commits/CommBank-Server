@@ -26,9 +26,11 @@ public class UsersService : IUsersService
         await _usersCollection.InsertOneAsync(newUser);
     }
 
-    public async Task UpdateAsync(string id, User updatedUser) =>
-        await _usersCollection.ReplaceOneAsync(x => x.Id == id, updatedUser);
-
+    public async Task UpdateAsync(string id, User updateUser)
+    {
+        updateUser.Password = BCrypt.Net.BCrypt.HashPassword(updateUser.Password);
+        await _usersCollection.ReplaceOneAsync(x => x.Id == id, updateUser);
+    }        
     public async Task RemoveAsync(string id) =>
         await _usersCollection.DeleteOneAsync(x => x.Id == id);
 }
